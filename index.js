@@ -14,11 +14,11 @@ const client = new Client({
 });
 
 client.once('ready', () => {
-    console.log('reacy');
+    console.log('ready');
 });
 
 // client.on('messageCreate', msg => {
 
 // });
 
-client.login(process.env.BOT_TOKEN);
+client.login(process.env.TOKEN);
