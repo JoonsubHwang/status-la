@@ -11,7 +11,25 @@ const client = new Client({
     ]
 });
 
+const updateInterval = 30 * 1000; // 30 sec
 let defServer;
+let statuses = { // TODO: remove mockup data
+    Azena:      'Azena',
+    Una:        'Una',
+    Regulus:    'Regulus',
+    Avesta:     'Avesta',
+    Galatur:    'Galatur',
+    Karta:      'Karta',
+    Ladon:      'Ladon',
+    Kharmine:   'Kharmine',
+    Elzowin:    'Elzowin', 
+    Sasha:      'Sasha', 
+    Adrinne:    'Adrinne', 
+    Aldebaran:  'Aldebaran', 
+    Zosma:      'Zosma', 
+    Vykas:      'Vykas', 
+    Danube:     'Danube',
+}
 
 client.once('ready', () => {
     console.log('ready');
@@ -25,8 +43,17 @@ client.on('interactionCreate', async interaction => {
     const { commandName } = interaction;
     
     if (commandName === 'setserver') {
+
         defServer = interaction.options.getString('servername');
+
+        setNickname(interaction);
+
+        setInterval(() => {
+            setNickname(interaction);
+        }, updateInterval)
+
         await interaction.reply(`Server set to **${defServer}**.`);
+
     }
     else if (commandName === 'server') {
         await interaction.reply('Elzowin: g');
@@ -39,5 +66,12 @@ client.on('interactionCreate', async interaction => {
     }
 
 });
+
+function setNickname(interaction) {
+    const status = statuses[defServer];
+    const icon = '✅';
+    const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : '');
+    interaction.guild.me.setNickname(`${icon} ${serverName} - ${status}`);
+}
 
 client.login(token);
