@@ -30,6 +30,12 @@ let statuses = { // TODO: remove mockup data
     Vykas:      'Vykas', 
     Danube:     'Danube',
 }
+const icons = {
+    good: '✅',
+    busy: '🔥',
+    full: '⛔',
+    maintenance: '🔧',
+}
 
 client.once('ready', () => {
     console.log('ready');
@@ -69,7 +75,7 @@ client.on('interactionCreate', async interaction => {
 
 function setNickname(interaction) {
     const status = statuses[defServer];
-    const icon = '✅';
+    const icon = icons.busy;
     const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : '');
     interaction.guild.me.setNickname(`${icon} ${serverName} - ${status}`);
 }
