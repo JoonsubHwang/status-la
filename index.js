@@ -1,9 +1,5 @@
-import { Client, Intents } from 'discord.js';
-import dotenv from 'dotenv';
+const { Client, Intents } = require('discord.js');
 
-
-
-dotenv.config();
 
 const client = new Client({
     intents: [
