@@ -1,5 +1,7 @@
 const { Client, Intents } = require('discord.js');
 const { token } = require('./config.json');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 
 
@@ -50,15 +52,23 @@ client.on('interactionCreate', async interaction => {
     
     if (commandName === 'setserver') {
 
-        defServer = interaction.options.getString('servername');
+        try {
 
-        setNickname(interaction);
+            defServer = interaction.options.getString('servername');
 
-        setInterval(() => {
-            setNickname(interaction);
-        }, updateInterval)
+            setInterval(() => {
+                setNickname(interaction);
+            }, updateInterval)
 
-        await interaction.reply(`Server set to **${defServer}**.`);
+            await setNickname(interaction);
+
+            await interaction.reply(`Server set to **${defServer}**.`);
+
+        } catch (error) {
+            
+            console.error(error.message);
+            await interaction.reply(`Error`);
+        }
 
     }
     else if (commandName === 'server') {
@@ -73,11 +83,63 @@ client.on('interactionCreate', async interaction => {
 
 });
 
-function setNickname(interaction) {
-    const status = statuses[defServer];
-    const icon = icons.busy;
-    const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : '');
-    interaction.guild.me.setNickname(`${icon} ${serverName} - ${status}`);
+async function setNickname(interaction) {
+
+    try {
+
+        await fetchStatuses();
+
+        const status = statuses[defServer][0].toUpperCase() + statuses[defServer].slice(1);
+        const icon = icons[statuses[defServer]];
+        const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : '');
+
+        interaction.guild.me.setNickname(`${icon} ${serverName} - ${status}`);
+
+    } catch (error) {
+        console.error(error.message);
+        throw error;    
+    }
+
+}
+
+async function fetchStatuses() {
+
+    const zoneClass = '.ags-ServerStatus-content-responses-response';
+    const serverClass = zoneClass + '-server';
+    const serverNameClass = serverClass + '-name';
+    const statusClass = serverClass + '-status--';
+    const statusList = {
+        good: 'good',
+        busy: 'busy',
+        full: 'full',
+        maintenance: 'maintenance',
+    }
+    const url = 'https://www.playlostark.com/en-us/support/server-status';
+
+
+    try {
+
+        let $ = await cheerio.load((await axios(url)).data);
+
+        const servers = $(zoneClass).children(serverClass).toArray();
+        servers.forEach(server => {
+
+            let $ = cheerio.load(server);
+            const serverName = $(serverNameClass).text().trim();
+            let status;
+
+            for (const stat in statusList)
+                if (($(statusClass+statusList[stat]).html()) !== null)
+                    status = statusList[stat];
+
+            statuses[serverName] = status;
+        });
+
+    } catch (error) {
+        console.error(`[fetchStatuses] Failed to fetch from ${url}`);
+        throw error;
+    }
+
 }
 
 client.login(token);
