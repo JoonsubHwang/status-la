@@ -14,23 +14,22 @@ const client = new Client({
 });
 
 const updateInterval = 30 * 1000; // 30 sec
-let defServer;
-let statuses = { // TODO: remove mockup data
-    Azena:      'Azena',
-    Una:        'Una',
-    Regulus:    'Regulus',
-    Avesta:     'Avesta',
-    Galatur:    'Galatur',
-    Karta:      'Karta',
-    Ladon:      'Ladon',
-    Kharmine:   'Kharmine',
-    Elzowin:    'Elzowin', 
-    Sasha:      'Sasha', 
-    Adrinne:    'Adrinne', 
-    Aldebaran:  'Aldebaran', 
-    Zosma:      'Zosma', 
-    Vykas:      'Vykas', 
-    Danube:     'Danube',
+let statuses = {
+    Azena:      '',
+    Una:        '',
+    Regulus:    '',
+    Avesta:     '',
+    Galatur:    '',
+    Karta:      '',
+    Ladon:      '',
+    Kharmine:   '',
+    Elzowin:    '', 
+    Sasha:      '', 
+    Adrinne:    '', 
+    Aldebaran:  '', 
+    Zosma:      '', 
+    Vykas:      '', 
+    Danube:     '',
 }
 const icons = {
     good: '✅',
@@ -38,6 +37,8 @@ const icons = {
     full: '⛔',
     maintenance: '🔧',
 }
+
+let defServer;
 
 client.once('ready', () => {
     console.log('ready');
@@ -65,7 +66,6 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply(`Server set to **${defServer}**.`);
 
         } catch (error) {
-            
             console.error(error.message);
             await interaction.reply(`Error`);
         }
@@ -75,7 +75,24 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply('Elzowin: g');
     }
     else if (commandName === 'all') {
-        await interaction.reply('Elzowin: g \nAvesta: g');
+
+        try {
+            
+            await fetchStatuses();
+
+            let allStatuses = '';
+            for (const serverName in statuses) {
+                const status = statuses[serverName][0].toUpperCase() + statuses[serverName].slice(1);
+                const icon = icons[statuses[serverName]];
+                allStatuses += `${icon} ${serverName} - ${status}\n`;
+            }
+
+            await interaction.reply(allStatuses);
+
+        } catch (error) {
+            console.error(error.message);
+            await interaction.reply(`Error`);
+        }
     }
     else if (commandName === 'help') {
         await interaction.reply('\`/setserver <servername>\` Set default server to display. \n\`/server (<servername>)\` Display status of the default or specified server. \n\`/all\` Display status of all servers.');
