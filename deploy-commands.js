@@ -1,0 +1,22 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
+const { token, clientId, guildId } = require('./config.json');
+
+
+
+const commands = [
+    new SlashCommandBuilder().setName('setserver').setDescription('Set default server to display.'),
+    new SlashCommandBuilder().setName('server').setDescription('Display status of a server.'),
+    new SlashCommandBuilder().setName('all').setDescription('Display status of all servers.'),
+    new SlashCommandBuilder().setName('help').setDescription('Display commands.'),
+]
+.map(command => command.toJSON());
+
+const rest = new REST({ version: '9' }).setToken(token);
+
+rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
+	.then(() => {
+        console.log('Successfully registered application commands.');
+    })
+	.catch(console.error);
