@@ -11,6 +11,8 @@ const client = new Client({
     ]
 });
 
+let defServer;
+
 client.once('ready', () => {
     console.log('ready');
 });
@@ -23,7 +25,8 @@ client.on('interactionCreate', async interaction => {
     const { commandName } = interaction;
     
     if (commandName === 'setserver') {
-        await interaction.reply('Server set to **Elzowin**.');
+        defServer = interaction.options.getString('servername');
+        await interaction.reply(`Server set to **${defServer}**.`);
     }
     else if (commandName === 'server') {
         await interaction.reply('Elzowin: g');
@@ -32,7 +35,7 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply('Elzowin: g \nAvesta: g');
     }
     else if (commandName === 'help') {
-        await interaction.reply('\`/setserver\` Set default server to display. \n\`/server\` Display status of a server. \n\`/all\` Display status of all servers.');
+        await interaction.reply('\`/setserver <servername>\` Set default server to display. \n\`/server (<servername>)\` Display status of the default or specified server. \n\`/all\` Display status of all servers.');
     }
 
 });
