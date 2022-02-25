@@ -38,7 +38,7 @@ const icons = {
     maintenance: '🔧',
 }
 
-let defServer;
+let defServer, notify = true;
 
 client.once('ready', () => {
     console.log('ready');
@@ -104,10 +104,16 @@ async function setNickname(interaction) {
 
     try {
 
+        const prevStatus = statuses[defServer][0].toUpperCase() + statuses[defServer].slice(1);
+
         await fetchStatuses();
 
         const status = statuses[defServer][0].toUpperCase() + statuses[defServer].slice(1);
         const icon = icons[statuses[defServer]];
+
+        if (notify && (prevStatus !== ''))
+            if (prevStatus !== status)
+                interaction.channel.send(`${defServer}: ${icons[prevStatus.toLowerCase()]} ${prevStatus} ➜ ${icon} ${status}`)
         const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : '');
 
         interaction.guild.me.setNickname(`${icon} ${serverName} - ${status}`);
