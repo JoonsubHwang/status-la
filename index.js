@@ -13,7 +13,7 @@ const client = new Client({
     ]
 });
 
-client.on('ready', () => {
+client.once('ready', () => {
     console.log('reacy');
 });
 
