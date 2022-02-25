@@ -15,21 +15,21 @@ const client = new Client({
 
 const updateInterval = 30 * 1000; // 30 sec
 let statuses = {
-    Azena:      '',
-    Una:        '',
-    Regulus:    '',
-    Avesta:     '',
-    Galatur:    '',
-    Karta:      '',
-    Ladon:      '',
-    Kharmine:   '',
-    Elzowin:    '', 
-    Sasha:      '', 
-    Adrinne:    '', 
-    Aldebaran:  '', 
-    Zosma:      '', 
-    Vykas:      '', 
-    Danube:     '',
+    Azena:      undefined,
+    Una:        undefined,
+    Regulus:    undefined,
+    Avesta:     undefined,
+    Galatur:    undefined,
+    Karta:      undefined,
+    Ladon:      undefined,
+    Kharmine:   undefined,
+    Elzowin:    undefined, 
+    Sasha:      undefined, 
+    Adrinne:    undefined, 
+    Aldebaran:  undefined, 
+    Zosma:      undefined, 
+    Vykas:      undefined, 
+    Danube:     undefined,
 }
 const icons = {
     good: '✅',
@@ -104,14 +104,14 @@ async function setNickname(interaction) {
 
     try {
 
-        const prevStatus = statuses[defServer][0].toUpperCase() + statuses[defServer].slice(1);
+        const prevStatus = (statuses[defServer] !== undefined) ? statuses[defServer][0].toUpperCase() + statuses[defServer].slice(1) : null;
 
         await fetchStatuses();
 
         const status = statuses[defServer][0].toUpperCase() + statuses[defServer].slice(1);
         const icon = icons[statuses[defServer]];
 
-        if (notify && (prevStatus !== ''))
+        if (notify && (prevStatus !== null))
             if (prevStatus !== status)
                 interaction.channel.send(`${defServer}: ${icons[prevStatus.toLowerCase()]} ${prevStatus} ➜ ${icon} ${status}`)
         const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : '');
