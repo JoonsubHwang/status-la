@@ -175,7 +175,11 @@ client.on('interactionCreate', async interaction => {
         }
     }
     else if (commandName === 'help') {
-        await interaction.reply('\`/setserver <servername>\` Set default server to display. \n\`/server (<servername>)\` Display status of the default or specified server. \n\`/all\` Display status of all servers.');
+        await interaction.reply( '\`/setserver <servername>\` Set default server to display. \n'
+                                +'\`/update\` Update status of default server. \n'
+                                +'\`/server <servername>\` Display status of a specified server. \n'
+                                +'\`/zone nae/naw/euc/euw/sa\` Display status of servers in a specified zone. \n'
+                                +'\`/all\` Display status of all servers.');
     }
 
 });
