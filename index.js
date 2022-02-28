@@ -140,7 +140,6 @@ client.on('interactionCreate', async interaction => {
             const serverName = interaction.options.getString('servername').toLowerCase();
         
             let status;
-                
             for (const zone in statuses)
                 if (statuses[zone].hasOwnProperty(serverName))
                     status = statuses[zone][serverName];
@@ -185,19 +184,22 @@ async function setNickname(interaction) {
 
     try {
 
-        const prevStatus = (statuses[defServer] !== undefined) ? statuses[defServer] : null; // TODO capitalize
+        const prevStatus = (statuses[defServer] !== undefined) ? statuses[defServer] : null;
 
         await fetchStatuses();
 
-        const status = statuses[defServer]; // TODO capitalize
-        const icon = icons[statuses[defServer]];
+        let status;
+        for (const zone in statuses)
+            if (statuses[zone].hasOwnProperty(defServer))
+                status = statuses[zone][defServer];
 
         if (notify && (prevStatus !== null))
             if (prevStatus !== status)
-                interaction.channel.send(`${defServer}: ${icons[prevStatus.toLowerCase()]} ${prevStatus} ➜ ${icon} ${status}`) // TODO capitalize
-        const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : ''); // TODO capitalize
+                interaction.channel.send(`${capitalize(defServer)}: ${icons[prevStatus]} ${capitalize(prevStatus)} ➜ ${icons[status]} ${capitalize(status)}`) // TODO capitalize
+        
+        const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : '');
 
-        interaction.guild.me.setNickname(`${icon} ${serverName} - ${status}`); // TODO capitalize
+        interaction.guild.me.setNickname(`${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}`);
 
     } catch (error) {
         console.error(error.message);
