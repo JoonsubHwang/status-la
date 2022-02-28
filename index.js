@@ -108,15 +108,24 @@ client.on('interactionCreate', async interaction => {
 
         try {
 
-            defServer = interaction.options.getString('servername').toLowerCase();
+            const servername = interaction.options.getString('servername').toLowerCase();
 
-            setInterval(() => {
-                setNickname(interaction);
-            }, updateInterval)
+            if (isValidServer(servername)) {
+                
+                defServer = servername;
 
-            await setNickname(interaction);
+                setInterval(() => {
+                    setNickname(interaction);
+                }, updateInterval)
+    
+                await setNickname(interaction);
+    
+                await interaction.reply(`Server set to **${defServer}**.`); // TODO capitalize
 
-            await interaction.reply(`Server set to **${defServer}**.`); // TODO capitalize
+            }
+            else {
+                await interaction.reply(`❌ Error: **${servername}** server does not exist.`); // TODO capitalize
+            }
 
         } catch (error) {
             console.error(error.message);
@@ -216,6 +225,15 @@ async function fetchStatuses() {
         throw error;
     }
 
+}
+
+function isValidServer(servername) {
+    
+    for (const zone in statuses)
+        if (statuses[zone].hasOwnProperty(servername))
+            return true;
+
+    return false;
 }
 
 client.login(token);
