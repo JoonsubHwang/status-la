@@ -155,16 +155,36 @@ client.on('interactionCreate', async interaction => {
         }
     
     }
+    else if (commandName === 'zone') {
+
+        try {
+            await fetchStatuses();
+
+            const zoneId = interaction.options.getString('zonename').toLowerCase();
+
+            let zoneStatuses = `\n🌎 **${zoneId.toUpperCase()}**\n`;
+            for (const serverName in statuses[zoneId]) {
+                const status = statuses[zoneId][serverName];
+                zoneStatuses += `\t${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
+            }
+
+            await interaction.reply(zoneStatuses);
+
+        } catch (error) {
+            console.error(error.message);
+            await interaction.reply(`❌ Error: ` + error.message);
+        }
+    }
     else if (commandName === 'all') {
 
         try {
             await fetchStatuses();
 
             let allStatuses = '';
-            for (const zone in statuses) {
-                allStatuses += `\n🌎 **${zone.toUpperCase()}**\n`;
-                for (const serverName in statuses[zone]) {
-                    const status = statuses[zone][serverName];
+            for (const zoneId in statuses) {
+                allStatuses += `\n🌎 **${zoneId.toUpperCase()}**\n`;
+                for (const serverName in statuses[zoneId]) {
+                    const status = statuses[zoneId][serverName];
                     allStatuses += `\t${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
                 }
             }
@@ -179,7 +199,7 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply( '\`/setserver <servername>\` Set default server to display. \n'
                                 +'\`/update\` Update status of default server. \n'
                                 +'\`/server <servername>\` Display status of a specified server. \n'
-                                +'\`/zone nae/naw/euc/euw/sa\` Display status of servers in a specified zone. \n'
+                                +'\`/zone <zonename>\` Display status of servers in a specified zone. \n'
                                 +'\`/all\` Display status of all servers.');
     }
 

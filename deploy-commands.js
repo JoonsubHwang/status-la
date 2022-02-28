@@ -5,11 +5,21 @@ const { token, clientId, guildId } = require('./config.json');
 
 
 
+const zoneList = [
+    ['North America East (NAE)', 'nae'], 
+    ['North America West (NAW)', 'naw'], 
+    ['Europe Central (EUC)', 'euc'],
+    ['Europe West (EUW)', 'euw'], 
+    ['South America (SA)', 'sa'], 
+];
+
 const commands = [
     new SlashCommandBuilder().setName('setserver').setDescription('Set default server to display.')
         .addStringOption(option => option.setName('servername').setDescription('Name of the server').setRequired(true)),
     new SlashCommandBuilder().setName('server').setDescription('Display status of a server.')
         .addStringOption(option => option.setName('servername').setDescription('Name of the server').setRequired(true)),
+        new SlashCommandBuilder().setName('zone').setDescription('Display status of a server.')
+            .addStringOption(option => option.setName('zonename').setDescription('Name of the zone').setRequired(true).addChoices(zoneList)),
     new SlashCommandBuilder().setName('all').setDescription('Display status of all servers.'),
     new SlashCommandBuilder().setName('help').setDescription('Display commands.'),
 ]
