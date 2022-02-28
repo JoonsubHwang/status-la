@@ -161,12 +161,13 @@ client.on('interactionCreate', async interaction => {
             await fetchStatuses();
 
             let allStatuses = '';
-            for (const zone in statuses)
+            for (const zone in statuses) {
+                allStatuses += `\n🌎 **${zone.toUpperCase()}**\n`;
                 for (const serverName in statuses[zone]) {
                     const status = statuses[zone][serverName];
-                    allStatuses += `${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
+                    allStatuses += `\t${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
                 }
-
+            }
             await interaction.reply(allStatuses);
 
         } catch (error) {
