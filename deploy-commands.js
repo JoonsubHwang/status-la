@@ -5,24 +5,6 @@ const { token, clientId, guildId } = require('./config.json');
 
 
 
-const nae = [ 
-    [ 'azena',      'azena' ],
-    [ 'una',        'una' ],
-    [ 'regulus',    'regulus' ],
-    [ 'avesta',     'avesta' ],
-    [ 'galatur',    'galatur' ],
-    [ 'karta',      'karta' ],
-    [ 'ladon',      'ladon' ],
-    [ 'kharmine',   'kharmine' ],
-    [ 'elzowin',    'elzowin' ], 
-    [ 'sasha',      'sasha' ], 
-    [ 'adrinne',   'adrinne' ], 
-    [ 'aldebaran', 'aldebaran' ], 
-    [ 'zosma',      'zosma' ], 
-    [ 'vykas',      'vykas' ], 
-    [ 'danube',     'danube' ], 
-];
-
 const commands = [
     new SlashCommandBuilder().setName('setserver').setDescription('Set default server to display.')
         .addStringOption(option => option.setName('servername').setDescription('Name of the server').setRequired(true)),
