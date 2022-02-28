@@ -108,11 +108,11 @@ client.on('interactionCreate', async interaction => {
 
         try {
 
-            const servername = interaction.options.getString('servername').toLowerCase();
+            const serverName = interaction.options.getString('servername').toLowerCase();
 
-            if (isValidServer(servername)) {
+            if (isValidServer(serverName)) {
                 
-                defServer = servername;
+                defServer = serverName;
 
                 setInterval(() => {
                     setNickname(interaction);
@@ -120,11 +120,11 @@ client.on('interactionCreate', async interaction => {
     
                 await setNickname(interaction);
     
-                await interaction.reply(`Server set to **${defServer}**.`); // TODO capitalize
+                await interaction.reply(`Server is set to **${capitalize(defServer)}**.`);
 
             }
             else {
-                await interaction.reply(`❌ Error: **${servername}** server does not exist.`); // TODO capitalize
+                await interaction.reply(`❌ Error: **${capitalize(defServer)}** server does not exist.`);
             }
 
         } catch (error) {
@@ -143,11 +143,11 @@ client.on('interactionCreate', async interaction => {
             await fetchStatuses();
 
             let allStatuses = '';
-            for (const serverName in statuses) {
-                const status = statuses[serverName]; // TODO capitalize
-                const icon = icons[statuses[serverName]];
-                allStatuses += `${icon} ${serverName} - ${status}\n`; // TODO capitalize
-            }
+            for (const zone in statuses)
+                for (const serverName in statuses[zone]) {
+                    const status = statuses[zone][serverName];
+                    allStatuses += `${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
+                }
 
             await interaction.reply(allStatuses);
 
@@ -217,7 +217,9 @@ async function fetchStatuses() {
                 if (($(statusClass+statusList[stat]).html()) !== null)
                     status = statusList[stat];
 
-            statuses[serverName] = status;
+            for (const zone in statuses)
+                if (statuses[zone].hasOwnProperty(serverName))
+                    statuses[zone][serverName] = status;
         });
 
     } catch (error) {
@@ -227,13 +229,17 @@ async function fetchStatuses() {
 
 }
 
-function isValidServer(servername) {
-    
+function isValidServer(serverName) {
+
     for (const zone in statuses)
-        if (statuses[zone].hasOwnProperty(servername))
+        if (statuses[zone].hasOwnProperty(serverName))
             return true;
 
     return false;
+}
+
+function capitalize(str) {
+    return str[0].toUpperCase() + str.slice(1);
 }
 
 client.login(token);
