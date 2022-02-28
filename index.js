@@ -107,7 +107,6 @@ client.on('interactionCreate', async interaction => {
     if (commandName === 'setserver') {
 
         try {
-
             const serverName = interaction.options.getString('servername').toLowerCase();
 
             if (isValidServer(serverName)) {
@@ -124,22 +123,42 @@ client.on('interactionCreate', async interaction => {
 
             }
             else {
-                await interaction.reply(`❌ Error: **${capitalize(defServer)}** server does not exist.`);
+                await interaction.reply(`❌ Error: **${serverName}** server does not exist.`);
             }
 
         } catch (error) {
             console.error(error.message);
-            await interaction.reply(`Error`);
+            await interaction.reply(`❌ Error: ` + error.message);
         }
 
     }
     else if (commandName === 'server') {
-        await interaction.reply('Elzowin: g');
+
+        try {
+            await fetchStatuses();
+
+            const serverName = interaction.options.getString('servername').toLowerCase();
+        
+            let status;
+                
+            for (const zone in statuses)
+                if (statuses[zone].hasOwnProperty(serverName))
+                    status = statuses[zone][serverName];
+
+            if (status === undefined)
+                await interaction.reply(`❌ Error: **${serverName}** server does not exist.`);
+            else
+                await interaction.reply(`${icons[status]} **${capitalize(serverName)}** - ${capitalize(status)}`);
+
+        } catch (error) {
+            console.error(error.message);
+            await interaction.reply(`❌ Error: ` + error.message);
+        }
+    
     }
     else if (commandName === 'all') {
 
         try {
-            
             await fetchStatuses();
 
             let allStatuses = '';
@@ -153,7 +172,7 @@ client.on('interactionCreate', async interaction => {
 
         } catch (error) {
             console.error(error.message);
-            await interaction.reply(`Error`);
+            await interaction.reply(`❌ Error: ` + error.message);
         }
     }
     else if (commandName === 'help') {
