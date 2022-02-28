@@ -15,21 +15,74 @@ const client = new Client({
 
 const updateInterval = 30 * 1000; // 30 sec
 let statuses = {
-    Azena:      undefined,
-    Una:        undefined,
-    Regulus:    undefined,
-    Avesta:     undefined,
-    Galatur:    undefined,
-    Karta:      undefined,
-    Ladon:      undefined,
-    Kharmine:   undefined,
-    Elzowin:    undefined, 
-    Sasha:      undefined, 
-    Adrinne:    undefined, 
-    Aldebaran:  undefined, 
-    Zosma:      undefined, 
-    Vykas:      undefined, 
-    Danube:     undefined,
+    nae: {
+        azena:      undefined,
+        una:        undefined,
+        regulus:    undefined,
+        avesta:     undefined,
+        galatur:    undefined,
+        karta:      undefined,
+        ladon:      undefined,
+        kharmine:   undefined,
+        elzowin:    undefined, 
+        sasha:      undefined, 
+        adrinne:    undefined, 
+        aldebaran:  undefined, 
+        zosma:      undefined, 
+        vykas:      undefined, 
+        danube:     undefined,
+    },
+    naw: { 
+        mari:       undefined,
+        valtan:     undefined,
+        enviska:    undefined,
+        akkan:      undefined,
+        bergstrom:  undefined,
+        shandi:     undefined,
+        rohendel:   undefined,
+    },
+    euc: { 
+        neria:      undefined,
+        kadan:      undefined,
+        trixion:    undefined,
+        calvasus:   undefined,
+        thirain:    undefined,
+        zinnervale: undefined,
+        asta:       undefined,
+        wei:        undefined,
+        slen:       undefined, 
+        sceptrum:   undefined, 
+        procyon:    undefined, 
+        beatrice:   undefined, 
+        inanna:     undefined, 
+        thaemine:   undefined, 
+        sirius:     undefined, 
+        antares:    undefined, 
+        brelshaza:  undefined, 
+        nineveh:    undefined, 
+        mokoko:     undefined, 
+    },
+    euw: { 
+        rethramis:  undefined,
+        tortoyk:    undefined,
+        moonkeep:   undefined,
+        stonehearth:undefined,
+        shadespire: undefined,
+        tragon:     undefined,
+        petrania:   undefined,
+        punika:     undefined,
+    },
+    sa: { 
+        kazeros:    undefined,
+        arcturus:   undefined,
+        gienah:     undefined,
+        arcturus:   undefined,
+        yorn:       undefined,
+        feiton:     undefined,
+        vern:       undefined,
+        kurzan:     undefined,
+        prideholme: undefined,
+    },
 }
 const icons = {
     good: '✅',
@@ -55,7 +108,7 @@ client.on('interactionCreate', async interaction => {
 
         try {
 
-            defServer = interaction.options.getString('servername');
+            defServer = interaction.options.getString('servername').toLowerCase();
 
             setInterval(() => {
                 setNickname(interaction);
@@ -63,7 +116,7 @@ client.on('interactionCreate', async interaction => {
 
             await setNickname(interaction);
 
-            await interaction.reply(`Server set to **${defServer}**.`);
+            await interaction.reply(`Server set to **${defServer}**.`); // TODO capitalize
 
         } catch (error) {
             console.error(error.message);
@@ -82,9 +135,9 @@ client.on('interactionCreate', async interaction => {
 
             let allStatuses = '';
             for (const serverName in statuses) {
-                const status = statuses[serverName][0].toUpperCase() + statuses[serverName].slice(1);
+                const status = statuses[serverName]; // TODO capitalize
                 const icon = icons[statuses[serverName]];
-                allStatuses += `${icon} ${serverName} - ${status}\n`;
+                allStatuses += `${icon} ${serverName} - ${status}\n`; // TODO capitalize
             }
 
             await interaction.reply(allStatuses);
@@ -104,19 +157,19 @@ async function setNickname(interaction) {
 
     try {
 
-        const prevStatus = (statuses[defServer] !== undefined) ? statuses[defServer][0].toUpperCase() + statuses[defServer].slice(1) : null;
+        const prevStatus = (statuses[defServer] !== undefined) ? statuses[defServer] : null; // TODO capitalize
 
         await fetchStatuses();
 
-        const status = statuses[defServer][0].toUpperCase() + statuses[defServer].slice(1);
+        const status = statuses[defServer]; // TODO capitalize
         const icon = icons[statuses[defServer]];
 
         if (notify && (prevStatus !== null))
             if (prevStatus !== status)
-                interaction.channel.send(`${defServer}: ${icons[prevStatus.toLowerCase()]} ${prevStatus} ➜ ${icon} ${status}`)
-        const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : '');
+                interaction.channel.send(`${defServer}: ${icons[prevStatus.toLowerCase()]} ${prevStatus} ➜ ${icon} ${status}`) // TODO capitalize
+        const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : ''); // TODO capitalize
 
-        interaction.guild.me.setNickname(`${icon} ${serverName} - ${status}`);
+        interaction.guild.me.setNickname(`${icon} ${serverName} - ${status}`); // TODO capitalize
 
     } catch (error) {
         console.error(error.message);
@@ -148,7 +201,7 @@ async function fetchStatuses() {
         servers.forEach(server => {
 
             let $ = cheerio.load(server);
-            const serverName = $(serverNameClass).text().trim();
+            const serverName = $(serverNameClass).text().trim().toLowerCase();
             let status;
 
             for (const stat in statusList)
