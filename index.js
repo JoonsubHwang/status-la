@@ -16,6 +16,7 @@ const client = new Client({
 const updateInterval = 30 * 1000; // 30 sec
 let statuses = {
     nae: {
+        name:       'North America East',
         azena:      undefined,
         una:        undefined,
         regulus:    undefined,
@@ -33,6 +34,7 @@ let statuses = {
         danube:     undefined,
     },
     naw: { 
+        name:       'North America West',
         mari:       undefined,
         valtan:     undefined,
         enviska:    undefined,
@@ -42,6 +44,7 @@ let statuses = {
         rohendel:   undefined,
     },
     euc: { 
+        name:       'Europe Central',
         neria:      undefined,
         kadan:      undefined,
         trixion:    undefined,
@@ -63,6 +66,7 @@ let statuses = {
         mokoko:     undefined, 
     },
     euw: { 
+        name:       'Europe West',
         rethramis:  undefined,
         tortoyk:    undefined,
         moonkeep:   undefined,
@@ -73,6 +77,7 @@ let statuses = {
         punika:     undefined,
     },
     sa: { 
+        name:       'South America',
         kazeros:    undefined,
         arcturus:   undefined,
         gienah:     undefined,
@@ -140,9 +145,9 @@ client.on('interactionCreate', async interaction => {
             const serverName = interaction.options.getString('servername').toLowerCase();
         
             let status;
-            for (const zone in statuses)
-                if (statuses[zone].hasOwnProperty(serverName))
-                    status = statuses[zone][serverName];
+            for (const zoneId in statuses)
+                if (statuses[zoneId].hasOwnProperty(serverName))
+                    status = statuses[zoneId][serverName];
 
             if (status === undefined)
                 await interaction.reply(`❌ Error: **${serverName}** server does not exist.`);
@@ -162,10 +167,12 @@ client.on('interactionCreate', async interaction => {
 
             const zoneId = interaction.options.getString('zonename').toLowerCase();
 
-            let zoneStatuses = `\n🌎 **${zoneId.toUpperCase()}**\n`;
+            let zoneStatuses = `\n🌎 **${statuses[zoneId].name}**\n`;
             for (const serverName in statuses[zoneId]) {
-                const status = statuses[zoneId][serverName];
-                zoneStatuses += `\t${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
+                if (serverName !== 'name') {
+                    const status = statuses[zoneId][serverName];
+                    zoneStatuses += `\t${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
+                }
             }
 
             await interaction.reply(zoneStatuses);
@@ -182,10 +189,12 @@ client.on('interactionCreate', async interaction => {
 
             let allStatuses = '';
             for (const zoneId in statuses) {
-                allStatuses += `\n🌎 **${zoneId.toUpperCase()}**\n`;
+                allStatuses += `\n🌎 **${statuses[zoneId].name}**\n`;
                 for (const serverName in statuses[zoneId]) {
-                    const status = statuses[zoneId][serverName];
-                    allStatuses += `\t${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
+                    if (serverName !== 'name') {
+                        const status = statuses[zoneId][serverName];
+                        allStatuses += `\t${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
+                    }
                 }
             }
             await interaction.reply(allStatuses);
@@ -263,9 +272,9 @@ async function fetchStatuses() {
                 if (($(statusClass+statusList[stat]).html()) !== null)
                     status = statusList[stat];
 
-            for (const zone in statuses)
-                if (statuses[zone].hasOwnProperty(serverName))
-                    statuses[zone][serverName] = status;
+            for (const zoneId in statuses)
+                if (statuses[zoneId].hasOwnProperty(serverName))
+                    statuses[zoneId][serverName] = status;
         });
 
     } catch (error) {
@@ -277,8 +286,8 @@ async function fetchStatuses() {
 
 function isValidServer(serverName) {
 
-    for (const zone in statuses)
-        if (statuses[zone].hasOwnProperty(serverName))
+    for (const zoneId in statuses)
+        if (statuses[zoneId].hasOwnProperty(serverName))
             return true;
 
     return false;
