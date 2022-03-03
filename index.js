@@ -1,4 +1,4 @@
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, Permissions } = require('discord.js');
 const { token } = require('./config.json');
 const axios = require('axios');
 const cheerio = require('cheerio');
@@ -96,7 +96,8 @@ const icons = {
     maintenance: '🔧',
 }
 
-let defServer, notify = true;
+let myServer, statusChannel;
+let notify = true;
 
 client.once('ready', () => {
     console.log('ready');
@@ -114,18 +115,31 @@ client.on('interactionCreate', async interaction => {
         try {
             const serverName = interaction.options.getString('servername').toLowerCase();
 
-            if (isValidServer(serverName)) {
+            if (isValidServer(serverName)) { 
+
+                if (statusChannel === undefined) { // create // TODO check statusChannel still exists
                 
-                defServer = serverName;
-
-                setInterval(() => {
-                    setNickname(interaction);
-                }, updateInterval)
+                    myServer = serverName;
     
-                await setNickname(interaction);
-    
-                await interaction.reply(`Server is set to **${capitalize(defServer)}**.`);
+                    setTimeout(() => {
+                        setInterval(() => {
+                            updateChannel(interaction);
+                        }, updateInterval);
+                    }, updateInterval);
+        
+                    await createChannel(interaction);
+                    await interaction.reply(`Server is set to **${capitalize(myServer)}**.`);
+                }
+                else if (serverName !== myServer) { // change server
 
+                    myServer = serverName;
+                    
+                    updateChannel(interaction, true);
+    
+                    await interaction.reply(`Server is set to **${capitalize(myServer)}**.`);
+                }
+                else // same server
+                    await interaction.reply(`Server has already been set to **${capitalize(myServer)}**.`);
             }
             else {
                 await interaction.reply(`❌ Error: **${serverName}** server does not exist.`);
@@ -140,6 +154,9 @@ client.on('interactionCreate', async interaction => {
     else if (commandName === 'server') {
 
         try {
+            
+            // TODO servername = myServer
+
             await fetchStatuses();
 
             const serverName = interaction.options.getString('servername').toLowerCase();
@@ -214,30 +231,42 @@ client.on('interactionCreate', async interaction => {
 
 });
 
-async function setNickname(interaction) {
+async function createChannel(interaction) {
 
-    try {
+    await fetchStatuses();
+    let statusString = getStatusString(myServer);
 
-        const prevStatus = (statuses[defServer] !== undefined) ? statuses[defServer] : null;
+    const channel = await interaction.guild.channels.create(statusString, {
+        type: 'GUILD_VOICE',
+        permissionOverwrites: [
+            { // private channel
+                id: interaction.guild.roles.everyone,
+                deny: [Permissions.FLAGS.VIEW_CHANNEL],
+            },
+            { // except myself
+                id: interaction.guild.me,
+                allow: [Permissions.FLAGS.VIEW_CHANNEL],
+            }
+        ]
+    });
+    statusChannel = channel.id;
 
-        await fetchStatuses();
+    await interaction.channel.send(`Created status display.`);
+}
 
-        let status;
-        for (const zone in statuses)
-            if (statuses[zone].hasOwnProperty(defServer))
-                status = statuses[zone][defServer];
+async function updateChannel(interaction, isDiffChannel) {
 
-        if (notify && (prevStatus !== null))
-            if (prevStatus !== status)
-                interaction.channel.send(`${capitalize(defServer)}: ${icons[prevStatus]} ${capitalize(prevStatus)} ➜ ${icons[status]} ${capitalize(status)}`) // TODO capitalize
-        
-        const serverName = defServer.slice(0, 4) + (defServer.length > 4 ? '.' : '');
+    let prevStatusString = getStatusString(myServer);
+    await fetchStatuses();
+    let statusString = getStatusString(myServer);
 
-        interaction.guild.me.setNickname(`${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}`);
+    if (isDiffChannel || (prevStatusString !== statusString)) { // different channel or update status
 
-    } catch (error) {
-        console.error(error.message);
-        throw error;    
+        let channel = await interaction.guild.channels.fetch(statusChannel);
+        await channel.setName(statusString);
+
+        if (notify && (prevStatusString !== statusString)) // notify status update
+            interaction.channel.send(`${capitalize(myServer)}: ${prevStatusString.slice(0,1)} ${prevStatusString.slice(9)} ➜ ${statusString.slice(0,1)} ${statusString.slice(9)}`);
     }
 
 }
@@ -295,6 +324,18 @@ function isValidServer(serverName) {
 
 function capitalize(str) {
     return str[0].toUpperCase() + str.slice(1);
+}
+
+function getStatusString(serverName) {
+
+    let status;
+    for (const zone in statuses)
+        if (statuses[zone].hasOwnProperty(serverName))
+            status = statuses[zone][serverName];
+
+    serverName = myServer.slice(0, 4) + (myServer.length > 4 ? '.' : '');
+    
+    return `${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}`;
 }
 
 client.login(token);
