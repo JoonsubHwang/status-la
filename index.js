@@ -1,4 +1,4 @@
-const { Client, Intents, Permissions } = require('discord.js');
+const { Client, Intents, Permissions, MessageEmbed } = require('discord.js');
 const { token } = require('./config.json');
 const axios = require('axios');
 const cheerio = require('cheerio');
@@ -198,18 +198,7 @@ client.on('interactionCreate', async interaction => {
 
         try {
             await fetchStatuses();
-
-            let allStatuses = '';
-            for (const zoneId in statuses) {
-                allStatuses += `\n🌎 **${statuses[zoneId].name}**\n`;
-                for (const serverName in statuses[zoneId]) {
-                    if (serverName !== 'name') {
-                        const status = statuses[zoneId][serverName];
-                        allStatuses += `\t${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
-                    }
-                }
-            }
-            await interaction.reply(allStatuses);
+            await interaction.reply({ embeds: [ generateAllEmbed() ] });
 
         } catch (error) {
             console.error(error.message);
@@ -330,9 +319,28 @@ function getStatusString(serverName) {
         if (statuses[zone].hasOwnProperty(serverName))
             status = statuses[zone][serverName];
 
-    serverName = myServer.slice(0, maxLength) + (myServer.length > maxLength ? '.' : '');
+    serverName = serverName.slice(0, maxLength) + (serverName.length > maxLength ? '.' : '');
     
     return `${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}`;
+}
+
+function generateAllEmbed() {
+
+    let allStatuses = [];
+
+    for (const zoneId in statuses) {
+
+        let zoneStatuses = { name: statuses[zoneId].name, value: '', inline: true }
+
+        for (const serverName in statuses[zoneId])
+            if (serverName !== 'name')
+                zoneStatuses.value += `${icons[statuses[zoneId][serverName]]} ${capitalize(serverName)} \n`;
+
+        allStatuses.push(zoneStatuses);
+    }
+
+    return new MessageEmbed()
+        .addFields(...allStatuses);
 }
 
 client.login(token);
