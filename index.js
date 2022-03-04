@@ -330,7 +330,7 @@ function generateAllEmbed() {
 
     for (const zoneId in statuses) {
 
-        let zoneStatuses = { name: statuses[zoneId].name, value: '', inline: true }
+        let zoneStatuses = { name: `🌎 ${statuses[zoneId].name}`, value: '', inline: true }
 
         for (const serverName in statuses[zoneId])
             if (serverName !== 'name')
