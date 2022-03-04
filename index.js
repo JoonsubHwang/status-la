@@ -176,18 +176,8 @@ client.on('interactionCreate', async interaction => {
 
         try {
             await fetchStatuses();
-
-            const zoneId = interaction.options.getString('zonename').toLowerCase();
-
-            let zoneStatuses = `\n🌎 **${statuses[zoneId].name}**\n`;
-            for (const serverName in statuses[zoneId]) {
-                if (serverName !== 'name') {
-                    const status = statuses[zoneId][serverName];
-                    zoneStatuses += `\t${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}\n`;
-                }
-            }
-
-            await interaction.reply(zoneStatuses);
+            const zoneId = interaction.options.getString('zonename');
+            await interaction.reply({ embeds: [ generateZoneEmbed(zoneId) ] });
 
         } catch (error) {
             console.error(error.message);
@@ -324,23 +314,29 @@ function getStatusString(serverName) {
     return `${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}`;
 }
 
+function generateZoneEmbed(zoneId) {
+    return new MessageEmbed().addFields(generateZoneField(zoneId));
+}
+
 function generateAllEmbed() {
 
     let allStatuses = [];
 
-    for (const zoneId in statuses) {
+    for (const zoneId in statuses)
+        allStatuses.push(generateZoneField(zoneId));
 
-        let zoneStatuses = { name: `🌎 ${statuses[zoneId].name}`, value: '', inline: true }
+    return new MessageEmbed().addFields(...allStatuses);
+}
 
-        for (const serverName in statuses[zoneId])
-            if (serverName !== 'name')
-                zoneStatuses.value += `${icons[statuses[zoneId][serverName]]} ${capitalize(serverName)} \n`;
+function generateZoneField(zoneId) {
+    
+    let zoneStatuses = { name: `🌎 ${statuses[zoneId].name}`, value: '' }
 
-        allStatuses.push(zoneStatuses);
-    }
+    for (const serverName in statuses[zoneId])
+        if (serverName !== 'name')
+            zoneStatuses.value += `${icons[statuses[zoneId][serverName]]} ${capitalize(serverName)} \n`;
 
-    return new MessageEmbed()
-        .addFields(...allStatuses);
+    return zoneStatuses;
 }
 
 client.login(token);
