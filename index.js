@@ -105,9 +105,6 @@ client.once('ready', () => {
 
 client.on('interactionCreate', async interaction => {
 
-    if (!interaction.isCommand)
-        return;
-
     const { commandName } = interaction;
     
     if (commandName === 'setserver') {
@@ -154,8 +151,6 @@ client.on('interactionCreate', async interaction => {
     else if (commandName === 'server') {
 
         try {
-            
-            // TODO servername = myServer
 
             await fetchStatuses();
 
@@ -266,7 +261,7 @@ async function updateChannel(interaction, isDiffChannel) {
         await channel.setName(statusString);
 
         if (notify && (prevStatusString !== statusString)) // notify status update
-            interaction.channel.send(`${capitalize(myServer)}: ${prevStatusString.slice(0,1)} ${prevStatusString.slice(9)} ➜ ${statusString.slice(0,1)} ${statusString.slice(9)}`);
+            interaction.channel.send(`${capitalize(myServer)}: ${prevStatusString.slice(0,1)} ➜ ${statusString.slice(0,1)}`);
     }
 
 }
@@ -328,12 +323,14 @@ function capitalize(str) {
 
 function getStatusString(serverName) {
 
+    const maxLength = 6;
+
     let status;
     for (const zone in statuses)
         if (statuses[zone].hasOwnProperty(serverName))
             status = statuses[zone][serverName];
 
-    serverName = myServer.slice(0, 4) + (myServer.length > 4 ? '.' : '');
+    serverName = myServer.slice(0, maxLength) + (myServer.length > maxLength ? '.' : '');
     
     return `${icons[status]} ${capitalize(serverName)} - ${capitalize(status)}`;
 }
