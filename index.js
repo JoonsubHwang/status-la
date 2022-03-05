@@ -230,19 +230,31 @@ async function createChannel(interaction) {
 
 async function updateChannel(interaction, isDiffChannel) {
 
-    let prevStatusString = getStatusString(myServer);
-    await fetchStatuses();
-    let statusString = getStatusString(myServer);
+    if (statusChannel === undefined)
+        return;
+    else {
 
-    if (isDiffChannel || (prevStatusString !== statusString)) { // different channel or update status
-
-        let channel = await interaction.guild.channels.fetch(statusChannel);
-        await channel.setName(statusString);
-
-        if (notify && (prevStatusString !== statusString)) // notify status update
-            interaction.channel.send(`${capitalize(myServer)}: ${prevStatusString.slice(0,1)} ➜ ${statusString.slice(0,1)}`);
+        let prevStatusString = getStatusString(myServer);
+        await fetchStatuses();
+        let statusString = getStatusString(myServer);
+    
+        if (isDiffChannel || (prevStatusString !== statusString)) { // different channel or update status
+    
+            try {
+                let channel = await interaction.guild.channels.fetch(statusChannel);
+                await channel.setName(statusString);
+            } catch (error) {
+                console.debug(error)
+                if (error.code === 10003) // unknown channel
+                    statusChannel = undefined;
+                else
+                    throw error;
+            }
+    
+            if (notify && (prevStatusString !== statusString)) // notify status update
+                interaction.channel.send(`${capitalize(myServer)}: ${prevStatusString.slice(0,1)} ➜ ${statusString.slice(0,1)}`);
+        }
     }
-
 }
 
 async function fetchStatuses() {
