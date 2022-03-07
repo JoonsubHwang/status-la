@@ -215,11 +215,11 @@ async function createChannel(interaction) {
         permissionOverwrites: [
             { // private channel
                 id: interaction.guild.roles.everyone,
-                deny: [Permissions.FLAGS.VIEW_CHANNEL],
+                deny: [Permissions.FLAGS.CONNECT],
             },
             { // except myself
                 id: interaction.guild.me,
-                allow: [Permissions.FLAGS.VIEW_CHANNEL],
+                allow: [Permissions.FLAGS.CONNECT],
             }
         ]
     });
