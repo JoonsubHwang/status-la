@@ -5,15 +5,6 @@ const cheerio = require('cheerio');
 
 
 
-const client = new Client({
-    intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    ]
-});
-
-const updateInterval = 30 * 1000; // 30 sec
 let statuses = {
     nae: {
         name:       'North America East',
@@ -95,10 +86,20 @@ const icons = {
     full: '⛔',
     maintenance: '🔧',
 }
-
+const updateInterval = 30 * 1000; // 30 sec
 let myServer, statusChannelId, countChannelId;
 let displayCount = false;
 let notify = true;
+
+
+
+const client = new Client({
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+    ]
+});
 
 client.once('ready', () => {
     console.log('ready');
