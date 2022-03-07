@@ -87,8 +87,8 @@ const icons = {
     maintenance: '🔧',
 }
 const updateInterval = 30 * 1000; // 30 sec
-let myServer, statusChannelId, countChannelId, countUpdater;
-let displayCount = false;
+let myServer, statusChannelId, onlineChannelId, onlineUpdater;
+let displayOnline = false;
 let notify = true;
 
 
@@ -150,7 +150,7 @@ client.on('interactionCreate', async interaction => {
         }
 
     }
-    // TODO update count as well
+    // TODO update online as well
     else if (commandName === 'update') {
         try {
             if (statusChannelId === undefined)
@@ -211,32 +211,32 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply(`❌ Error: ` + error.message);
         }
     }
-    else if (commandName === 'count') {
+    else if (commandName === 'online') {
 
         try {
             const activate = interaction.options.getString('switch');
     
             if (activate === null) // no option
-                displayCount = !displayCount;
+                displayOnline = !displayOnline;
             else
-                displayCount = (activate === 'on');
+                displayOnline = (activate === 'on');
 
-            if (displayCount) {
+            if (displayOnline) {
 
-                setTimeout(() => {
-                    countUpdater = setInterval(() => {
-                        updateCount(interaction);
-                    }, updateInterval);
-                }, updateInterval);
+                // setTimeout(() => {
+                //     onlineUpdater = setInterval(() => {
+                //         updateOnline(interaction);
+                //     }, updateInterval);
+                // }, updateInterval);
 
-                await createCountChannel(interaction);
+                await createOnlineChannel(interaction);
             }
             else {
-                countUpdater = undefined;
-                countChannelId = undefined;
+                onlineUpdater = undefined;
+                onlineChannelId = undefined;
             }
 
-            await interaction.reply(`**${displayCount ? 'Start' : 'Stop'}** displaying number of people playing Lost Ark.`);
+            await interaction.reply(`**${displayOnline ? 'Start' : 'Stop'}** displaying number of people playing Lost Ark.`);
 
         } catch (error) {
             console.error(error.message);
@@ -245,7 +245,7 @@ client.on('interactionCreate', async interaction => {
         
     }
     else if (commandName === 'help') {
-        await interaction.reply(''  +'\`/count\ (ON/OFF)` Display number of people playing Lost Ark. \n' // TODO rename to /online
+        await interaction.reply(''  +'\`/online\ (ON/OFF)` Display number of people playing Lost Ark. \n'
                                     +'\`/setserver <servername>\` Set default server to display. \n'
                                     +'\`/update\` Update status of default server. \n'
                                     +'\`/server <servername>\` Display status of a specified server. \n'
@@ -281,7 +281,7 @@ async function createChannel(interaction) {
     await interaction.channel.send(`Created status display.`);
 }
 
-async function createCountChannel(interaction) {
+async function createOnlineChannel(interaction) {
 
     const maxMemberCount = interaction.guild.memberCount;
     let onlineMemberCount = 0;
@@ -306,9 +306,9 @@ async function createCountChannel(interaction) {
             }
         ]
     });
-    countChannelId = channel.id;
+    onlineChannelId = channel.id;
 
-    await interaction.channel.send(`Created count display.`);
+    await interaction.channel.send(`Created online display.`);
 }
 
 async function updateChannel(interaction, isDiffChannel) {

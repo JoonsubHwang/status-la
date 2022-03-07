@@ -28,7 +28,7 @@ const commands = [
 
     new SlashCommandBuilder().setName('all').setDescription('Display status of all servers.'),
 
-    new SlashCommandBuilder().setName('count').setDescription('Display number of people playing Lost Ark.')
+    new SlashCommandBuilder().setName('online').setDescription('Display number of people playing Lost Ark.')
         .addStringOption(option => option.setName('switch').setDescription('On / Off').addChoices([ ['ON', 'on'], ['OFF', 'of'], ])),
 
     new SlashCommandBuilder().setName('help').setDescription('Display commands.'),
