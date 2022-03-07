@@ -96,7 +96,7 @@ const icons = {
     maintenance: '🔧',
 }
 
-let myServer, statusChannel;
+let myServer, statusChannelId;
 let notify = true;
 
 client.once('ready', () => {
@@ -114,7 +114,7 @@ client.on('interactionCreate', async interaction => {
 
             if (isValidServer(serverName)) { 
 
-                if (statusChannel === undefined) { // create // TODO check statusChannel still exists
+                if (statusChannelId === undefined) { // create // TODO check statusChannel still exists
                 
                     myServer = serverName;
     
@@ -150,7 +150,7 @@ client.on('interactionCreate', async interaction => {
     }
     else if (commandName === 'update') {
         try {
-            if (statusChannel === undefined)
+            if (statusChannelId === undefined)
                 await interaction.reply(`❌ Error: Server is not set. Set server first using \`/setserver\`.`);
             else {
                 updateChannel(interaction);
@@ -236,14 +236,14 @@ async function createChannel(interaction) {
             }
         ]
     });
-    statusChannel = channel.id;
+    statusChannelId = channel.id;
 
     await interaction.channel.send(`Created status display.`);
 }
 
 async function updateChannel(interaction, isDiffChannel) {
 
-    if (statusChannel === undefined)
+    if (statusChannelId === undefined)
         return;
     else {
 
@@ -254,12 +254,12 @@ async function updateChannel(interaction, isDiffChannel) {
         if (isDiffChannel || (prevStatusString !== statusString)) { // different channel or update status
     
             try {
-                let channel = await interaction.guild.channels.fetch(statusChannel);
+                let channel = await interaction.guild.channels.fetch(statusChannelId);
                 await channel.setName(statusString);
             } catch (error) {
                 console.debug(error)
                 if (error.code === 10003) // unknown channel
-                    statusChannel = undefined;
+                    statusChannelId = undefined;
                 else
                     throw error;
             }
