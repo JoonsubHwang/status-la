@@ -122,18 +122,18 @@ client.on('interactionCreate', async interaction => {
     
                     setTimeout(() => {
                         setInterval(() => {
-                            updateChannel(interaction);
+                            updateStatusChannel(interaction);
                         }, updateInterval);
                     }, updateInterval);
         
-                    await createChannel(interaction);
+                    await createStatusChannel(interaction);
                     await interaction.reply(`Server is set to **${capitalize(myServer)}**.`);
                 }
                 else if (serverName !== myServer) { // change server
 
                     myServer = serverName;
                     
-                    updateChannel(interaction, true);
+                    updateStatusChannel(interaction, true);
     
                     await interaction.reply(`Server is set to **${capitalize(myServer)}**.`);
                 }
@@ -156,7 +156,7 @@ client.on('interactionCreate', async interaction => {
             if (statusChannelId === undefined)
                 await interaction.reply(`❌ Error: Server is not set. Set server first using \`/setserver\`.`);
             else {
-                updateChannel(interaction);
+                updateStatusChannel(interaction);
                 await interaction.reply(`Updated status of **${capitalize(myServer)}**.`);
             }
         } catch (error) {
@@ -257,8 +257,7 @@ client.on('interactionCreate', async interaction => {
 
 });
 
-// TODO rename
-async function createChannel(interaction) {
+async function createStatusChannel(interaction) {
 
     await fetchStatuses();
     let statusString = getStatusString(myServer);
@@ -311,7 +310,7 @@ async function createOnlineChannel(interaction) {
     await interaction.channel.send(`Created online display.`);
 }
 
-async function updateChannel(interaction, isDiffChannel) {
+async function updateStatusChannel(interaction, isDiffChannel) {
 
     if (statusChannelId === undefined) // TODO destroy timer
         return;
