@@ -96,7 +96,8 @@ const icons = {
     maintenance: '🔧',
 }
 
-let myServer, statusChannelId;
+let myServer, statusChannelId, countChannelId;
+let displayCount = false;
 let notify = true;
 
 client.once('ready', () => {
@@ -105,7 +106,7 @@ client.once('ready', () => {
 
 client.on('interactionCreate', async interaction => {
 
-    const { commandName } = interaction;
+    const { commandName } = interaction; // TODO extract options
     
     if (commandName === 'setserver') {
 
@@ -208,12 +209,33 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply(`❌ Error: ` + error.message);
         }
     }
+    else if (commandName === 'count') {
+
+        try {
+            const activate = interaction.options.getString('switch');
+    
+            if (activate === null) // no option
+                displayCount = !displayCount;
+            else
+                displayCount = (activate === 'on');
+
+            await interaction.reply(`**${displayCount ? 'Start' : 'Stop'}** displaying number of people playing Lost Ark.`);
+
+        } catch (error) {
+            console.error(error.message);
+            await interaction.reply(`❌ Error: ` + error.message);
+        }
+        
+    }
     else if (commandName === 'help') {
-        await interaction.reply( '\`/setserver <servername>\` Set default server to display. \n'
-                                +'\`/update\` Update status of default server. \n'
-                                +'\`/server <servername>\` Display status of a specified server. \n'
-                                +'\`/zone <zonename>\` Display status of servers in a specified zone. \n'
-                                +'\`/all\` Display status of all servers.');
+        await interaction.reply(''  +'\`/count\ (ON/OFF)` Display number of people playing Lost Ark. \n'
+                                    +'\`/setserver <servername>\` Set default server to display. \n'
+                                    +'\`/update\` Update status of default server. \n'
+                                    +'\`/server <servername>\` Display status of a specified server. \n'
+                                    +'\`/zone <zonename>\` Display status of servers in a specified zone. \n'
+                                    +'\`/all\` Display status of all servers. \n'
+                                    +'\n'
+                                    +'*\`<>\`: Required \`()\`: Optional*');
     }
 
 });
@@ -243,7 +265,7 @@ async function createChannel(interaction) {
 
 async function updateChannel(interaction, isDiffChannel) {
 
-    if (statusChannelId === undefined)
+    if (statusChannelId === undefined) // TODO destroy timer
         return;
     else {
 

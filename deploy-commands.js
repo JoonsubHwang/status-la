@@ -14,17 +14,26 @@ const zoneList = [
 ];
 
 const commands = [
+
     new SlashCommandBuilder().setName('setserver').setDescription('Set server to be displayed.')
         .addStringOption(option => option.setName('servername').setDescription('Name of a server').setRequired(true)),
+
     new SlashCommandBuilder().setName('update').setDescription('Update status of the server.'),
+
     new SlashCommandBuilder().setName('server').setDescription('Display status of a server.')
         .addStringOption(option => option.setName('servername').setDescription('Name of a server').setRequired(true)),
-        new SlashCommandBuilder().setName('zone').setDescription('Display status of a server.')
-            .addStringOption(option => option.setName('zonename').setDescription('Name of a zone').setRequired(true).addChoices(zoneList)),
+
+    new SlashCommandBuilder().setName('zone').setDescription('Display status of a server.')
+        .addStringOption(option => option.setName('zonename').setDescription('Name of a zone').setRequired(true).addChoices(zoneList)),
+
     new SlashCommandBuilder().setName('all').setDescription('Display status of all servers.'),
+
+    new SlashCommandBuilder().setName('count').setDescription('Display number of people playing Lost Ark.')
+        .addStringOption(option => option.setName('switch').setDescription('On / Off').addChoices([ ['ON', 'on'], ['OFF', 'of'], ])),
+
     new SlashCommandBuilder().setName('help').setDescription('Display commands.'),
-]
-.map(command => command.toJSON());
+
+].map(command => command.toJSON());
 
 const rest = new REST({ version: '9' }).setToken(token);
 
