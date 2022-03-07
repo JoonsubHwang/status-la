@@ -14,12 +14,13 @@ const zoneList = [
 ];
 
 const commands = [
-    new SlashCommandBuilder().setName('setserver').setDescription('Set default server to display.')
-        .addStringOption(option => option.setName('servername').setDescription('Name of the server').setRequired(true)),
+    new SlashCommandBuilder().setName('setserver').setDescription('Set server to be displayed.')
+        .addStringOption(option => option.setName('servername').setDescription('Name of a server').setRequired(true)),
+    new SlashCommandBuilder().setName('update').setDescription('Update status of the server.'),
     new SlashCommandBuilder().setName('server').setDescription('Display status of a server.')
-        .addStringOption(option => option.setName('servername').setDescription('Name of the server').setRequired(true)),
+        .addStringOption(option => option.setName('servername').setDescription('Name of a server').setRequired(true)),
         new SlashCommandBuilder().setName('zone').setDescription('Display status of a server.')
-            .addStringOption(option => option.setName('zonename').setDescription('Name of the zone').setRequired(true).addChoices(zoneList)),
+            .addStringOption(option => option.setName('zonename').setDescription('Name of a zone').setRequired(true).addChoices(zoneList)),
     new SlashCommandBuilder().setName('all').setDescription('Display status of all servers.'),
     new SlashCommandBuilder().setName('help').setDescription('Display commands.'),
 ]

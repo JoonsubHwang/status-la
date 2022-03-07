@@ -148,6 +148,19 @@ client.on('interactionCreate', async interaction => {
         }
 
     }
+    else if (commandName === 'update') {
+        try {
+            if (statusChannel === undefined)
+                await interaction.reply(`❌ Error: Server is not set. Set server first using \`/setserver\`.`);
+            else {
+                updateChannel(interaction);
+                await interaction.reply(`Updated status of **${capitalize(myServer)}**.`);
+            }
+        } catch (error) {
+            console.error(error.message);
+            await interaction.reply(`❌ Error: ` + error.message);
+        }
+    }
     else if (commandName === 'server') {
 
         try {
