@@ -87,7 +87,7 @@ const icons = {
     maintenance: '🔧',
 }
 const updateInterval = 30 * 1000; // 30 sec
-let myServer, statusChannelId, countChannelId;
+let myServer, statusChannelId, countChannelId, countUpdater;
 let displayCount = false;
 let notify = true;
 
@@ -150,6 +150,7 @@ client.on('interactionCreate', async interaction => {
         }
 
     }
+    // TODO update count as well
     else if (commandName === 'update') {
         try {
             if (statusChannelId === undefined)
@@ -220,6 +221,21 @@ client.on('interactionCreate', async interaction => {
             else
                 displayCount = (activate === 'on');
 
+            if (displayCount) {
+
+                setTimeout(() => {
+                    countUpdater = setInterval(() => {
+                        updateCount(interaction);
+                    }, updateInterval);
+                }, updateInterval);
+
+                await createCountChannel(interaction);
+            }
+            else {
+                countUpdater = undefined;
+                countChannelId = undefined;
+            }
+
             await interaction.reply(`**${displayCount ? 'Start' : 'Stop'}** displaying number of people playing Lost Ark.`);
 
         } catch (error) {
@@ -229,18 +245,19 @@ client.on('interactionCreate', async interaction => {
         
     }
     else if (commandName === 'help') {
-        await interaction.reply(''  +'\`/count\ (ON/OFF)` Display number of people playing Lost Ark. \n'
+        await interaction.reply(''  +'\`/count\ (ON/OFF)` Display number of people playing Lost Ark. \n' // TODO rename to /online
                                     +'\`/setserver <servername>\` Set default server to display. \n'
                                     +'\`/update\` Update status of default server. \n'
                                     +'\`/server <servername>\` Display status of a specified server. \n'
                                     +'\`/zone <zonename>\` Display status of servers in a specified zone. \n'
                                     +'\`/all\` Display status of all servers. \n'
                                     +'\n'
-                                    +'*\`<>\`: Required \`()\`: Optional*');
+                                    +'*\`<>\`: Required \`()\`: Optional*'); // TODO add update interval
     }
 
 });
 
+// TODO rename
 async function createChannel(interaction) {
 
     await fetchStatuses();
@@ -262,6 +279,36 @@ async function createChannel(interaction) {
     statusChannelId = channel.id;
 
     await interaction.channel.send(`Created status display.`);
+}
+
+async function createCountChannel(interaction) {
+
+    const maxMemberCount = interaction.guild.memberCount;
+    let onlineMemberCount = 0;
+    // TODO count
+    // console.debug(interaction.guild.members.list())
+    // interaction.guild.members.resolve().forEach(member => {
+    //     console.debug(member.presence.activities)
+    // });
+    const icon = onlineMemberCount ? '🟢' : '⚫';
+    const onlineString = `${icon} Lost Ark ${onlineMemberCount} / ${maxMemberCount}`;
+
+    const channel = await interaction.guild.channels.create(onlineString, {
+        type: 'GUILD_VOICE',
+        permissionOverwrites: [
+            { // private channel
+                id: interaction.guild.roles.everyone,
+                deny: [Permissions.FLAGS.CONNECT],
+            },
+            { // except myself
+                id: interaction.guild.me,
+                allow: [Permissions.FLAGS.CONNECT],
+            }
+        ]
+    });
+    countChannelId = channel.id;
+
+    await interaction.channel.send(`Created count display.`);
 }
 
 async function updateChannel(interaction, isDiffChannel) {
