@@ -357,7 +357,7 @@ async function updateStatusChannel(interaction, isDiffChannel) {
             }
     
             if (notify && (prevStatusString !== statusString)) // notify status update
-                interaction.channel.send(`${capitalize(myServer)}: ${prevStatusString.substring(0, 2)} ➜ ${statusString.substring(0, 2))}`);
+                interaction.channel.send(`${capitalize(myServer)}: ${prevStatusString.substring(0, 2)} ➜ ${statusString.substring(0, 2)}`);
         }
     }
 }
