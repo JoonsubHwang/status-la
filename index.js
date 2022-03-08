@@ -264,15 +264,16 @@ client.on('interactionCreate', async interaction => {
         
     }
     else if (commandName === 'help') {
-        await interaction.reply(''  +'\`/online\ (ON/OFF)` Display number of people playing Lost Ark. \n'
+        await interaction.reply(''  +'\`/online\ (ON/OFF)` Display number of people playing Lost Ark. (Toggle or ON/OFF) \n'
                                     +'\`/setserver <servername>\` Set default server to display. \n'
                                     +'\`/update\` Update status of default server. \n'
                                     +'\`/server <servername>\` Display status of a specified server. \n'
                                     +'\`/zone <zonename>\` Display status of servers in a specified zone. \n'
                                     +'\`/all\` Display status of all servers. \n'
-                                    +'\`/notify\ (ON/OFF)` Notify when the server status changes. \n'
+                                    +'\`/notify\ (ON/OFF)` Notify when the server status changes. (Toggle or ON/OFF) \n'
                                     +'\n'
-                                    +'*\`<>\`: Required \`()\`: Optional*'); // TODO add update interval
+                                    +'*\`<>\`: Required \`()\`: Optional* \n'
+                                    +`*Update interval: ${updateInterval/1000} seconds*`);
     }
 
 });
