@@ -87,7 +87,7 @@ const icons = {
     maintenance: '🔧',
 }
 const updateInterval = 30 * 1000; // 30 sec
-let myServer, statusChannelId, onlineChannelId, onlineUpdater;
+let myServer, statusChannelId, onlineChannelId, statusUpdater, onlineUpdater;
 let displayOnline = false;
 let notify = true;
 
@@ -116,12 +116,12 @@ client.on('interactionCreate', async interaction => {
 
             if (isValidServer(serverName)) { 
 
-                if (statusChannelId === undefined) { // create // TODO check statusChannel still exists
+                if (statusChannelId === undefined) { // create
                 
                     myServer = serverName;
     
                     setTimeout(() => {
-                        setInterval(() => {
+                        statusUpdater = setInterval(() => {
                             updateStatusChannel(interaction);
                         }, updateInterval);
                     }, updateInterval);
@@ -312,8 +312,10 @@ async function createOnlineChannel(interaction) {
 
 async function updateStatusChannel(interaction, isDiffChannel) {
 
-    if (statusChannelId === undefined) // TODO destroy timer
+    if (statusChannelId === undefined) {
+        clearInterval(statusUpdater);
         return;
+    }
     else {
 
         let prevStatusString = getStatusString(myServer);
