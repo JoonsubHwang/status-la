@@ -31,6 +31,9 @@ const commands = [
     new SlashCommandBuilder().setName('online').setDescription('Display number of people playing Lost Ark.')
         .addStringOption(option => option.setName('switch').setDescription('On / Off').addChoices([ ['ON', 'on'], ['OFF', 'of'], ])),
 
+        new SlashCommandBuilder().setName('notify').setDescription('Notify when the server status changes.')
+            .addStringOption(option => option.setName('switch').setDescription('On / Off').addChoices([ ['ON', 'on'], ['OFF', 'of'], ])),
+
     new SlashCommandBuilder().setName('help').setDescription('Display commands.'),
 
 ].map(command => command.toJSON());

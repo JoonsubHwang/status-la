@@ -223,6 +223,7 @@ client.on('interactionCreate', async interaction => {
 
             if (displayOnline) {
 
+                // TODO
                 // setTimeout(() => {
                 //     onlineUpdater = setInterval(() => {
                 //         updateOnline(interaction);
@@ -244,6 +245,24 @@ client.on('interactionCreate', async interaction => {
         }
         
     }
+    else if (commandName === 'notify') {
+
+        try {
+            const activate = interaction.options.getString('switch');
+    
+            if (activate === null) // no option
+                notify = !notify;
+            else
+                notify = (activate === 'on');
+
+            await interaction.reply(`**${notify ? 'Start' : 'Stop'}** notifying on the server status update.`);
+
+        } catch (error) {
+            console.error(error.message);
+            await interaction.reply(`❌ Error: ` + error.message);
+        }
+        
+    }
     else if (commandName === 'help') {
         await interaction.reply(''  +'\`/online\ (ON/OFF)` Display number of people playing Lost Ark. \n'
                                     +'\`/setserver <servername>\` Set default server to display. \n'
@@ -251,6 +270,7 @@ client.on('interactionCreate', async interaction => {
                                     +'\`/server <servername>\` Display status of a specified server. \n'
                                     +'\`/zone <zonename>\` Display status of servers in a specified zone. \n'
                                     +'\`/all\` Display status of all servers. \n'
+                                    +'\`/notify\ (ON/OFF)` Notify when the server status changes. \n'
                                     +'\n'
                                     +'*\`<>\`: Required \`()\`: Optional*'); // TODO add update interval
     }
